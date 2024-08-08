@@ -4,6 +4,7 @@
 #include "math/vector.h"
 #include "math/line.h"
 #include "math/triangle.h"
+#include "math/rect.h"
 
 #include <array>
 #include <ranges>
@@ -12,10 +13,11 @@
 namespace Engine {
 
 
-    class PolygonBase {
+    struct PolygonBase {
         //this retarded shit is all u get until i find something better, cry about it
         //(u cant leave iterator uninitialized)
         //also these should be only views
+        Vec2d origin = Vec2d(0,0);
         const Triangle* _tri_begin = 0;
         const Triangle* _tri_end = 0;
         const Vec2d* _vert_begin = 0;
@@ -32,8 +34,10 @@ namespace Engine {
         //sure I could make loops that can unwrap at compile time, but im lazy
         std::array<Vec2d, n_verts> verts;
         std::array<Triangle, n_verts - 2> triangles;
+        std::array<Line, n_verts> segments;
+        AxisAlignedRect bounding_box;
 
-        inline void InitTriangles(){
+        inline void Init(){
             std::array<Vec2d, 3> triangle_verts;
             //origin vertex is always constant
             triangle_verts[0] = verts[0];
@@ -43,25 +47,79 @@ namespace Engine {
                 triangle_verts[1] = verts[i + 1];
                 triangles[i] = Triangle(triangle_verts);
             }
+            for(size_t i = 0; i < n_verts - 1; i++){
+                segments[i] = Line(verts[i], verts[i + 1]);
+            }
+            segments[n_verts - 1] = Line(verts[n_verts - 1], verts[0]);
+
+            bounding_box = AxisAlignedRect(verts);
+
+        }
+        //Its probably quicker to translate everything instead of calling init again so
+        void Translate(const Vec2d& vec) {
+            origin += vec;
+            for(Vec2d& vert : verts)
+                vert += vec;
+
+            for(Line& seg : segments)
+                seg.Translate(vec);
+
+            for(Triangle& tri : triangles)
+                tri.Translate(vec);
+            bounding_box.Translate(vec);
+        }
+        void Rotate(double rad) {
 
         }
         //please unroll..
         template<size_t other_verts_n>
-        bool Intersects(const StaticConvexPolygon<other_verts_n>& other) const{
-            for(const Triangle& tri : triangles) {
-                for(const Triangle& other_tri : other.triangles) {
-                    if(tri.Intersects(other_tri))
-                        return false;    
+        bool Intersects(const StaticConvexPolygon<other_verts_n>& other) const {
+            if(!bounding_box.Intersects(other.bounding_box))
+                return false;
+            for(const Line& seg : segments) {
+                for(const Line& other_seg : other.segments) {
+                    if(seg.Intersects(other_seg)){
+                        return true;
+                    }
+                        
                 }
             }
+
+            //i THINK i only need to check one of the verts? idk
+            for(const Triangle& tri : triangles) {
+                // for(const Vec2d& vert : other.verts) {
+                //     if(tri.IsInTriangle(vert))
+                //         return true;
+                // }
+                if(tri.IsInTriangle(other.verts[0]))
+                    return true;
+            }
+            for(const Triangle& tri : other.triangles) {
+                // for(const Vec2d& vert : verts) {
+                //     if(tri.IsInTriangle(vert))
+                //         return true;
+                // }
+                if(tri.IsInTriangle(verts[0]))
+                    return true;
+            }
+            return false;
         }
         StaticConvexPolygon() {
             verts.fill({0,0});
+            Init();
         }
-        StaticConvexPolygon(std::array<Vec2d, n_verts> verts) {
+        StaticConvexPolygon(const Vec2d& origin, const std::array<Vec2d, n_verts>& verts) {
+            this->origin = origin;
             this->verts = verts;
+            Init();
         }
-
+        StaticConvexPolygon(const std::array<Vec2d, n_verts>& verts) {
+            this->origin = {0, 0};
+            this->verts = verts;
+            Init();
+        }
+        StaticConvexPolygon(Vec2d&& origin, std::array<Vec2d, n_verts>&& verts) : StaticConvexPolygon(std::forward<const Vec2d&>(origin), std::forward(verts)) {};
+        StaticConvexPolygon(std::array<Vec2d, n_verts>&& verts) : StaticConvexPolygon(std::forward(verts)) {};
     };
     class DynamicConvexPolygon : PolygonBase {
         std::vector<Vec2d> verts;
