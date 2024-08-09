@@ -24,7 +24,7 @@ namespace Engine {
         View<Triangle> triangles_view;
         View<Vec2> verts_view;
         View<Line> segs_view;
-
+        AxisAlignedRect bounding_box;
         //TODO: find a way to optimize the redundant vertices(PROBABLY not a problem but eh who knows)
     public:
         bool Intersects(const PolygonBase& other) const;
@@ -38,7 +38,7 @@ namespace Engine {
         std::array<Vec2, n_verts> verts;
         std::array<Triangle, n_verts - 2> triangles;
         std::array<Line, n_verts> segments;
-        AxisAlignedRect bounding_box;
+        
 
         inline void Init(){
             std::array<Vec2, 3> triangle_verts;

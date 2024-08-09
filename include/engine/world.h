@@ -20,6 +20,38 @@ namespace Engine {
         // Vec2 TraceLine(const Line& line, const Vec2& vec) {
 
         // }
+        public:
+        enum CollideTargets {
+            TARGET_ALL,
+            TARGET_TRI,
+            TARGET_QUAD,
+        };
+        
+        template<typename _PolygonType>
+        std::vector<obj_id_t> GetCollisions(const _PolygonType& polygon, CollideTargets targets = TARGET_ALL) {
+            std::vector<obj_id_t> collided;
+            switch (targets)
+            {
+            case TARGET_QUAD:
+                for(auto& it : quads_table) {
+                    if(polygon.Intersects(it.second))
+                        collided.push_back(it.first);
+                }
+                break;
+            case TARGET_TRI:
+                for(auto& it : triangles_table) {
+                    if(polygon.Intersects(it.second))
+                        collided.push_back(it.first);
+                }
+            default:
+                for(auto& it : objects_table) {
+                    if(polygon.Intersects(it.second))
+                        collided.push_back(it.first);
+                }
+                break;
+            }
+            return collided;
+        }
 
         //Either returns the object that it collided with, or nothing
         std::optional<obj_id_t> MoveObjectAndCollide(obj_id_t object_uid, const Vec2& vec) {
