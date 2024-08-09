@@ -4,6 +4,7 @@
 #include "../misc/typedefs.h"
 
 #include <cmath>
+#include <optional>
 //Yes its technically a """segment"""
 //No i dont care
 namespace Engine{
@@ -33,7 +34,7 @@ namespace Engine{
             return ((double)p_dist / (double)perp_move_distance);
         } 
         //Credits: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-        bool Intersects(const _Line& other) const{
+        std::optional<Vec2_t> GetIntersect(const _Line& other) const {
             double s1_x, s1_y, s2_x, s2_y;
             s1_x = end.x - start.x;     
             s1_y = end.y - start.y;
@@ -45,18 +46,17 @@ namespace Engine{
 
             if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
             {
-                // Collision detected
-                // if (i_x != NULL)
-                //     *i_x = start.x + (t * s1_x);
-                // if (i_y != NULL)
-                //     *i_y = start.y + (t * s1_y);
-                //if you want results of intersection
-                return true;
+
+                return Vec2_t(start.x + (t * s1_x), start.y + (t * s1_y));
             }
 
-            return false; // No collision
+            return {}; // No collision
         }
 
+        
+        bool Intersects(const _Line& other) const{
+            return GetIntersect(other).has_value();
+        }
         void Translate(const Vec2_t& vec) {
             start += vec;
             end += vec;
