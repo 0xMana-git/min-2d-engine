@@ -22,7 +22,7 @@ namespace Engine {
         }
         _AxisAlignedRect(const std::span<Vec2_t> verts) {
             double minx = 0, miny = 0, maxx = 0, maxy = 0;
-            for(const Vec2d& vert : verts) {
+            for(const Vec2_t& vert : verts) {
                 minx = std::min(minx, vert.x);
                 maxx = std::max(minx, vert.x);
                 miny = std::min(miny, vert.y);

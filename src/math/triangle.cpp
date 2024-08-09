@@ -6,11 +6,11 @@ using namespace Engine;
 
 
 bool Triangle::Intersects(const Triangle& other) const {
-    for(const Vec2d& p : verts) {
+    for(const Vec2& p : verts) {
         if(other.IsInTriangle(p))
             return false;
     }
-    for(const Vec2d& p : other.verts) {
+    for(const Vec2& p : other.verts) {
         if(IsInTriangle(p))
             return false;
     }
@@ -18,11 +18,11 @@ bool Triangle::Intersects(const Triangle& other) const {
 }
 
 //Credits: https://blackpawn.com/texts/pointinpoly/default.html
-bool Triangle::IsInTriangle(const Vec2d& point) const {
+bool Triangle::IsInTriangle(const Vec2& point) const {
     // Compute vectors        
-    Vec2d v0 = verts[2] - verts[0];
-    Vec2d v1 = verts[1] - verts[0];
-    Vec2d v2 = point - verts[0];
+    Vec2 v0 = verts[2] - verts[0];
+    Vec2 v1 = verts[1] - verts[0];
+    Vec2 v2 = point - verts[0];
 
     // Compute dot products
     double dot00 = v0 * v0;
@@ -39,12 +39,12 @@ bool Triangle::IsInTriangle(const Vec2d& point) const {
     // Check if point is in triangle
     return (u >= 0) && (v >= 0) && (u + v < 1);
 }
-void Triangle::Translate(const Vec2d& vec) {
-    for(Vec2d& p : verts) {
+void Triangle::Translate(const Vec2& vec) {
+    for(Vec2& p : verts) {
         p += vec;
     }
 }
-Triangle Triangle::GetTranslated(const Vec2d& vec) const {
+Triangle Triangle::GetTranslated(const Vec2& vec) const {
     Triangle newt(*this);
     newt.Translate(vec);
     return newt;
