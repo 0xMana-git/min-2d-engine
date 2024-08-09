@@ -11,7 +11,8 @@
 #include <array>
 #include <ranges>
 #include <vector>
-
+#include <cmath>
+#include <limits>
 
 namespace Engine {
 
@@ -28,7 +29,10 @@ namespace Engine {
         //TODO: find a way to optimize the redundant vertices(PROBABLY not a problem but eh who knows)
     public:
         bool Intersects(const PolygonBase& other) const;
-
+        double TraceLineToPolygon(const Line& line, const Vec2& vec) const;
+        double TracePolygon(const PolygonBase& other, const Vec2& vec) const;
+        //void Rotate(double rad);
+        //void Translate(const Vec2& vec);
     };
 
     //static probably has WAY better performance but ill make dynamic if I have to
@@ -92,31 +96,65 @@ namespace Engine {
                 return false;
             for(const Line& seg : segments) {
                 for(const Line& other_seg : other.segments) {
-                    if(seg.Intersects(other_seg)){
-                        return true;
-                    }
-                        
+                    if(seg.Intersects(other_seg))
+                        return true;      
                 }
             }
-
             //i THINK i only need to check one of the verts? idk
             for(const Triangle& tri : triangles) {
-                // for(const Vec2& vert : other.verts) {
-                //     if(tri.IsInTriangle(vert))
-                //         return true;
-                // }
                 if(tri.IsInTriangle(other.verts[0]))
                     return true;
             }
             for(const Triangle& tri : other.triangles) {
-                // for(const Vec2& vert : verts) {
-                //     if(tri.IsInTriangle(vert))
-                //         return true;
-                // }
                 if(tri.IsInTriangle(verts[0]))
                     return true;
             }
             return false;
+        }
+        
+        
+        bool Intersects(const PolygonBase& other) const {
+            if(!bounding_box.Intersects(other.bounding_box))
+                return false;
+            for(const Line& seg : segments) {
+                for(const Line& other_seg : other.segs_view.GetConst()) {
+                    if(seg.Intersects(other_seg))
+                        return true;      
+                }
+            }
+            //i THINK i only need to check one of the verts? idk
+            for(const Triangle& tri : triangles) {
+                if(tri.IsInTriangle(other.verts_view.GetConst()[0]))
+                    return true;
+            }
+            for(const Triangle& tri : other.triangles_view.GetConst()) {
+                if(tri.IsInTriangle(verts[0]))
+                    return true;
+            }
+            return false;
+        }
+        //ambiguous name
+        double StaticTraceLineToPolygon(const Line& line, const Vec2& vec) const {
+            double frac = std::numeric_limits<double>::max();
+            for(const Vec2& vert : verts){
+                if(!line.IsInLineTrajectory(vec, vert))
+                        continue;
+                frac = std::min(line.TraceLineSegmentToPointFrac(vec, vert), frac);
+            }
+            return frac;
+
+        }
+        template<size_t other_verts_n>
+        double TracePolygon(const StaticConvexPolygon<other_verts_n>& other, const Vec2& vec) const {
+            double frac = std::numeric_limits<double>::max();
+            for(const Line& line : other.segments) {
+                frac = std::min(StaticTraceLineToPolygon(line, vec), frac);
+            }
+            //This may be redundant if already got result
+            for(const Line& line : segments) {
+                frac = std::min(other.StaticTraceLineToPolygon(line, vec), frac);
+            }
+            return frac;
         }
         StaticConvexPolygon() {
             verts.fill({0,0});
