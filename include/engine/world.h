@@ -4,6 +4,7 @@
 #include "engine/misc/typedefs.h"
 
 #include <unordered_map>
+#include <typeinfo>
 
 
 namespace Engine {
@@ -11,9 +12,8 @@ namespace Engine {
     class World {
         
         std::unordered_map<obj_id_t, PolygonBase*> objects_table;
-        std::unordered_map<obj_id_t, TrianglePolygon> triangles_table;
-        std::unordered_map<obj_id_t, QuadConvexPolygon> quads_table;
-        obj_id_t current_id = 0;
+        std::unordered_map<obj_id_t, TrianglePolygon*> triangles_table;
+        std::unordered_map<obj_id_t, QuadConvexPolygon*> quads_table;
         // Vec2 TraceRay(const Vec2& start, const Vec2& end) {
 
         // }
@@ -55,6 +55,7 @@ namespace Engine {
 
         //Either returns the object that it collided with, or nothing
         std::optional<obj_id_t> MoveObjectAndCollide(obj_id_t object_uid, const Vec2& vec) {
+            //TODO: check for intersections at new position FIRST, then do the scanlines shit ONLY FOR INTERSECTED OBJECTS
             PolygonBase& object = *objects_table[object_uid];
             double min_frac = 1.0;
             obj_id_t collided_object_id = 0;
@@ -74,24 +75,27 @@ namespace Engine {
                     }
                 }
             }
+            
             if(collided)
                 return collided_object_id;
             return {};
         };
-        
-        obj_id_t AddObject(TrianglePolygon obj) {
-            obj_id_t index = current_id;
-            current_id++;
-            triangles_table[index] = obj;
-            objects_table[index] = &triangles_table[index];
-            return index;
+        //Please dont call this...
+        void AddObject(PolygonBase* obj, obj_id_t idx) {
+            if(typeid(obj) == typeid(TrianglePolygon*))
+                triangles_table[idx] = static_cast<TrianglePolygon*>(obj);
+            else if(typeid(obj) == typeid(QuadConvexPolygon*))
+                quads_table[idx] = static_cast<QuadConvexPolygon*>(obj);
+            objects_table[idx] = obj;
         }
-        obj_id_t AddObject(QuadConvexPolygon obj) {
-            obj_id_t index = current_id;
-            current_id++;
-            quads_table[index] = obj;
-            objects_table[index] = &triangles_table[index];
-            return index;
+        void AddObject(TrianglePolygon* obj, obj_id_t idx) {
+            triangles_table[idx] = obj;
+            objects_table[idx] = obj;
+        }
+        void AddObject(QuadConvexPolygon* obj, obj_id_t idx) {
+
+            quads_table[idx] = obj;
+            objects_table[idx] = obj;
         }
 
 
