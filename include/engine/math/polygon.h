@@ -34,7 +34,7 @@ namespace Engine {
         //void Rotate(double rad);
         //void Translate(const Vec2& vec);
     };
-
+    
     //static probably has WAY better performance but ill make dynamic if I have to
     template<size_t n_verts>
     struct StaticConvexPolygon : PolygonBase {
@@ -42,7 +42,8 @@ namespace Engine {
         std::array<Vec2, n_verts> verts;
         std::array<Triangle, n_verts - 2> triangles;
         std::array<Line, n_verts> segments;
-        
+        using TrianglePolygon = StaticConvexPolygon<3>;
+        using QuadConvexPolygon = StaticConvexPolygon<4>;
 
         inline void Init(){
             std::array<Vec2, 3> triangle_verts;
@@ -149,7 +150,7 @@ namespace Engine {
             return StaticTraceLineToPolygon(line, vec);
         }
         template<size_t other_verts_n>
-        double TracePolygon(const StaticConvexPolygon<other_verts_n>& other, const Vec2& vec) const {
+        double StaticTracePolygon(const StaticConvexPolygon<other_verts_n>& other, const Vec2& vec) const {
             double frac = std::numeric_limits<double>::max();
             for(const Line& line : other.segments) {
                 frac = std::min(StaticTraceLineToPolygon(line, vec), frac);
@@ -159,6 +160,14 @@ namespace Engine {
                 frac = std::min(other.StaticTraceLineToPolygon(line, vec), frac);
             }
             return frac;
+        }
+
+        double TracePolygon(const PolygonBase& other, const Vec2& vec) const {
+            if(typeid(other) == typeid(TrianglePolygon))
+                return TracePolygon(static_cast<const TrianglePolygon&>(other), vec);
+            if(typeid(other) == typeid(QuadConvexPolygon))
+                return TracePolygon(static_cast<const QuadConvexPolygon&>(other), vec);
+            throw std::exception();
         }
         StaticConvexPolygon() {
             verts.fill({0,0});

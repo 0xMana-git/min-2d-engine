@@ -51,7 +51,26 @@ namespace Engine {
                 
             return collided;
         }
+        template<typename _PolygonTy>
+        std::optional<obj_id_t> MoveObjectAndCollide(_PolygonTy& polygon, obj_id_t object_uid, const Vec2& vec) {
+            obj_id_t collided_object_id = 0;
+            std::vector<obj_id_t> collisions;
+            double frac = std::numeric_limits<double>::max();
+            _PolygonTy new_polygon = polygon;
+            new_polygon.Translate(vec);
+            collisions = GetCollisions(new_polygon, true);
+            if(collisions.size() == 0)
+                return {};
 
+            for(obj_id_t obj_id : collisions) {
+                double res = new_polygon.TracePolygon(*objects_table[obj_id], vec);
+                if(res < frac) {
+                    frac = res;
+                    collided_object_id = obj_id;
+                }
+            }
+            return collided_object_id;
+        }
         //NOTE: LOTS OF FUCKY SHIT GOING ON HERE, WATCH THE FUCK OUT
         //Either returns the object that it collided with, or nothing
         std::optional<obj_id_t> MoveObjectAndCollide(obj_id_t object_uid, const Vec2& vec) {
@@ -60,44 +79,20 @@ namespace Engine {
             PolygonBase& object_orig = *objects_table[object_uid];
             //just a placeholder value
             PolygonBase& object = object_orig;
-            std::vector<obj_id_t> collisions;
+            
             if(typeid(object_orig) == typeid(TrianglePolygon)){
-                TrianglePolygon object_new = static_cast<TrianglePolygon&>(object_orig);
-                object_new.Translate(vec);
-                PolygonBase& object = object_new;
-                collisions = GetCollisions(object_new, true);
+                return MoveObjectAndCollide(static_cast<TrianglePolygon&>(object_orig), object_uid, vec);
                 
             }
             else if (typeid(object_orig) == typeid(QuadConvexPolygon)) {
-                QuadConvexPolygon object_new = static_cast<QuadConvexPolygon&>(object_orig);
-                object_new.Translate(vec);
-                PolygonBase& object = object_new;
-                collisions = GetCollisions(object_new, true);
+                return MoveObjectAndCollide(static_cast<QuadConvexPolygon&>(object_orig), object_uid, vec);
+
             }
             else {
                 //i dunno dude
-                collisions = GetCollisions(object, false);
                 throw std::exception();
             }
-
-            obj_id_t collided_object_id = 0;
-
             
-            if(collisions.size() == 0)
-                return {};
-
-            double frac = std::numeric_limits<double>::max();
-            for(obj_id_t obj_id : collisions) {
-                double res = object.TracePolygon(*objects_table[obj_id], vec);
-                if(res < frac) {
-                    frac = res;
-                    collided_object_id = obj_id;
-                }
-            }
-            assert(frac < 1);
-            
-            
-            return collided_object_id;
         };
         //Please dont call this...
         void AddObject(PolygonBase* obj, obj_id_t idx) {
