@@ -29,36 +29,25 @@ namespace Engine {
             TARGET_QUAD,
         };
         
-        template<typename _PolygonType>
-        std::vector<obj_id_t> GetCollisions(const _PolygonType& polygon, bool use_specialized) {
+
+        std::vector<obj_id_t> GetCollisions(const PolygonBase& polygon) {
             std::vector<obj_id_t> collided;
-            if(use_specialized) {
-                for(auto& it : quads_table) {
-                    if(polygon.Intersects(*it.second))
-                        collided.push_back(it.first);
-                }
-                for(auto& it : triangles_table) {
-                    if(polygon.Intersects(*it.second))
-                        collided.push_back(it.first);
-                }
+            for(auto& it : objects_table) {
+                if(polygon.Intersects(*it.second))
+                    collided.push_back(it.first);
             }
-            else {
-                for(auto& it : objects_table) {
-                    if(polygon.Intersects(*it.second))
-                        collided.push_back(it.first);
-                }
-            }
+            
                 
             return collided;
         }
-        template<typename _PolygonTy>
-        std::optional<obj_id_t> MoveObjectAndCollide(_PolygonTy& polygon, obj_id_t object_uid, const Vec2& vec) {
+
+        std::optional<obj_id_t> MoveObjectAndCollide(const PolygonBase& polygon, obj_id_t object_uid, const Vec2& vec) {
             obj_id_t collided_object_id = 0;
             std::vector<obj_id_t> collisions;
             double frac = std::numeric_limits<double>::max();
-            _PolygonTy new_polygon = polygon;
+            DynamicConvexPolygon new_polygon = polygon;
             new_polygon.Translate(vec);
-            collisions = GetCollisions(new_polygon, true);
+            collisions = GetCollisions(new_polygon);
             if(collisions.size() == 0)
                 return {};
 
