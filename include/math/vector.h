@@ -54,6 +54,9 @@ namespace Engine {
         _Vec2 Sub(const _Vec2& other) const {
             return _Vec2(x - other.x, y - other.y);
         }
+        _Vec2 GetNegated() const {
+            return _Vec2(-x, -y);
+        }
 
         _Vec2 Scale(T v) const {
             return _Vec2(x * v, y * v);
@@ -91,6 +94,9 @@ namespace Engine {
         _Vec2 operator-(const _Vec2& other) const {
             return Sub(other);
         }
+        _Vec2 operator-() const {
+            return GetNegated();
+        }
 
         _Vec2 operator*(T v) const {
             return Scale(v);
@@ -115,5 +121,6 @@ namespace Engine {
     using Vec2d = _Vec2<double>;
     using Vec2i = _Vec2<int>;
     using Vec2l = _Vec2<int64>;
+    using Vec2 = _Vec2<num_t>;
 }
 

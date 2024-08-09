@@ -5,10 +5,12 @@
 #include "math/line.h"
 #include "math/triangle.h"
 #include "math/rect.h"
+#include "math/matrix.h"
 
 #include <array>
 #include <ranges>
 #include <vector>
+
 
 namespace Engine {
 
@@ -69,7 +71,12 @@ namespace Engine {
             bounding_box.Translate(vec);
         }
         void Rotate(double rad) {
-
+            //OPERATIONS ARE RIGHT TO LEFT!!!!
+            Matrix3x3 transform = Matrix3x3::FromTranslationVec(origin) * Matrix3x3::FromRotation(rad) * Matrix3x3::FromTranslationVec(-origin);
+            for(Vec2d& vert : verts) {
+                vert = transform.Transform(vert);
+            }
+            Init();
         }
         //please unroll..
         template<size_t other_verts_n>
