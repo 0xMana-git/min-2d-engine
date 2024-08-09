@@ -164,9 +164,9 @@ namespace Engine {
 
         double TracePolygon(const PolygonBase& other, const Vec2& vec) const {
             if(typeid(other) == typeid(TrianglePolygon))
-                return TracePolygon(static_cast<const TrianglePolygon&>(other), vec);
+                return StaticTTracePolygon(static_cast<const TrianglePolygon&>(other), vec);
             if(typeid(other) == typeid(QuadConvexPolygon))
-                return TracePolygon(static_cast<const QuadConvexPolygon&>(other), vec);
+                return StaticTracePolygon(static_cast<const QuadConvexPolygon&>(other), vec);
             throw std::exception();
         }
         StaticConvexPolygon() {
