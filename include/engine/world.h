@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/polygon.h"
-#include "misc/typedefs.h"
+#include "engine/math/polygon.h"
+#include "engine/misc/typedefs.h"
 
 #include <unordered_map>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vector.h"
-#include "../misc/typedefs.h"
+#include "engine/math/vector.h"
+#include "engine/misc/typedefs.h"
 
 #include <cmath>
 #include <optional>

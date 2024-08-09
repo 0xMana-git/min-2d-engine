@@ -1,12 +1,12 @@
 #pragma once
 
-#include "misc/typedefs.h"
-#include "math/vector.h"
-#include "math/line.h"
-#include "math/triangle.h"
-#include "math/rect.h"
-#include "math/matrix.h"
-#include "utils/view.h"
+#include "engine/misc/typedefs.h"
+#include "engine/math/vector.h"
+#include "engine/math/line.h"
+#include "engine/math/triangle.h"
+#include "engine/math/rect.h"
+#include "engine/math/matrix.h"
+#include "engine/utils/view.h"
 
 #include <array>
 #include <ranges>

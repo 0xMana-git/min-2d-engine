@@ -1,11 +1,11 @@
 #include <numbers>
 #include <iostream>
 
-#include "math/triangle.h"
-#include "math/polygon.h"
-#include "math/matrix.h"
-#include "utils/tostrs.h"
-#include "world.h"
+#include "engine/math/triangle.h"
+#include "engine/math/polygon.h"
+#include "engine/math/matrix.h"
+#include "engine/utils/tostrs.h"
+#include "engine/world.h"
 
 using namespace Engine;
 int main() { 

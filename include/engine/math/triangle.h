@@ -1,8 +1,8 @@
 #pragma once 
 
-#include "misc/typedefs.h"
-#include "math/vector.h"
-#include "math/line.h"
+#include "engine/misc/typedefs.h"
+#include "engine/math/vector.h"
+#include "engine/math/line.h"
 
 #include <array>
 
