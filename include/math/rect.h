@@ -24,9 +24,9 @@ namespace Engine {
             double minx = 0, miny = 0, maxx = 0, maxy = 0;
             for(const Vec2d& vert : verts) {
                 minx = std::min(minx, vert.x);
-                maxx = std::max(maxx, vert.x);
+                maxx = std::max(minx, vert.x);
                 miny = std::min(miny, vert.y);
-                maxy = std::max(maxy, vert.y);
+                maxy = std::max(miny, vert.y);
             }
             min = Vec2_t(minx, miny);
             max = Vec2_t(maxx, maxy);
