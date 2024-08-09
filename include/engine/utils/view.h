@@ -9,7 +9,7 @@ struct View {
     T* _end = 0;
 
     template<size_t len>
-    void Init(const std::array<T, len>& arr) {
+    void Init(std::array<T, len>& arr) {
         _begin = arr.begin();
         _end = arr.end();
     }

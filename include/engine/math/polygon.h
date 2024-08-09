@@ -163,16 +163,19 @@ namespace Engine {
         StaticConvexPolygon() {
             verts.fill({0,0});
             Init();
+            InitIterators();
         }
         StaticConvexPolygon(const Vec2& origin, const std::array<Vec2, n_verts>& verts) {
             this->origin = origin;
             this->verts = verts;
             Init();
+            InitIterators();
         }
         StaticConvexPolygon(const std::array<Vec2, n_verts>& verts) {
             this->origin = {0, 0};
             this->verts = verts;
             Init();
+            InitIterators();
         }
         StaticConvexPolygon(Vec2&& origin, std::array<Vec2, n_verts>&& verts) : StaticConvexPolygon(std::forward<const Vec2&>(origin), std::forward(verts)) {};
         StaticConvexPolygon(std::array<Vec2, n_verts>&& verts) : StaticConvexPolygon(std::forward(verts)) {};
