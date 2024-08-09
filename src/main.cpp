@@ -5,6 +5,7 @@
 #include "math/polygon.h"
 #include "math/matrix.h"
 #include "utils/tostrs.h"
+#include "world.h"
 
 using namespace Engine;
 int main() { 

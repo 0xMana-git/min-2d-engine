@@ -24,6 +24,8 @@ namespace Engine {
         const Triangle* _tri_end = 0;
         const Vec2* _vert_begin = 0;
         const Vec2* _vert_end = 0;
+        const Line* _seg_begin = 0;
+        const Line* _seg_end = 0;
         //TODO: find a way to optimize the redundant vertices(PROBABLY not a problem but eh who knows)
     public:
         bool Intersects(const PolygonBase& other) const;

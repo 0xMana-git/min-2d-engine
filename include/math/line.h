@@ -28,7 +28,8 @@ namespace Engine{
         //Yes there are redundant calcs, no I dont care
         //Returns fraction traced before move vec hits point
         double TraceLineSegmentToPointFrac(const Vec2_t& move_vec, const Vec2_t& point) const {
-            T perp_move_distance = std::sqrt(move_vec.GetLengthSqr() - GetDirection().GetNormalized() * move_vec);
+            T parallel_dist = GetDirection().GetNormalized() * move_vec;
+            T perp_move_distance = std::sqrt(move_vec.GetLengthSqr() - (parallel_dist * parallel_dist));
             T p_dist = GetDistToPoint(point);
             //yea idgaf at this point
             return ((double)p_dist / (double)perp_move_distance);
@@ -51,6 +52,10 @@ namespace Engine{
             }
 
             return {}; // No collision
+        }
+        bool IsInLineTrajectory(const Vec2_t& move_vec, const Vec2_t& point) const {
+            Vec2_t sd = point - start, ed = point - end;
+            return move_vec.Cross(sd) * move_vec.Cross(ed) < 0;
         }
 
         

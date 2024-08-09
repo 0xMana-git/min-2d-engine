@@ -14,16 +14,16 @@ namespace Engine {
             this->y = y;
         }
         
-        T GetLengthSqr() {
+        T GetLengthSqr() const {
             return x * x + y * y;
         }
 
-        T GetLength() {
+        T GetLength() const {
             return std::sqrt(x * x + y * y);
         }
 
 
-        void AddFrom(const _Vec2& other){
+        void AddFrom(const _Vec2& other) {
             x += other.x;
             y += other.y;
         }
@@ -106,12 +106,16 @@ namespace Engine {
             return Divide(v);
         }
         
-        T Dot(const _Vec2& other) const{
+        T Dot(const _Vec2& other) const {
             return x * other.x + y * other.y;
         }
 
         T operator*(const _Vec2& other) const {
             return Dot(other);
+        }
+
+        T Cross(const _Vec2& other) const {
+            return x * other.y - y * other.x;
         }
         
 
