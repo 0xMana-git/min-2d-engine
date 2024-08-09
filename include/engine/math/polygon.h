@@ -29,8 +29,8 @@ namespace Engine {
         //TODO: find a way to optimize the redundant vertices(PROBABLY not a problem but eh who knows)
     public:
         bool Intersects(const PolygonBase& other) const;
-        double TraceLineToPolygon(const Line& line, const Vec2& vec) const;
-        double TracePolygon(const PolygonBase& other, const Vec2& vec) const;
+        virtual double TraceLineToPolygon(const Line& line, const Vec2& vec) const;
+        virtual double TracePolygon(const PolygonBase& other, const Vec2& vec) const;
         //void Rotate(double rad);
         //void Translate(const Vec2& vec);
     };
@@ -143,6 +143,10 @@ namespace Engine {
             }
             return frac;
 
+        }
+
+        double TraceLineToPolygon(const Line& line, const Vec2& vec) const {
+            return StaticTraceLineToPolygon(line, vec);
         }
         template<size_t other_verts_n>
         double TracePolygon(const StaticConvexPolygon<other_verts_n>& other, const Vec2& vec) const {
