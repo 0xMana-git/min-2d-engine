@@ -6,6 +6,7 @@
 #include "math/triangle.h"
 #include "math/rect.h"
 #include "math/matrix.h"
+#include "utils/view.h"
 
 #include <array>
 #include <ranges>
@@ -20,12 +21,10 @@ namespace Engine {
         //(u cant leave iterator uninitialized)
         //also these should be only views
         Vec2 origin = Vec2(0,0);
-        const Triangle* _tri_begin = 0;
-        const Triangle* _tri_end = 0;
-        const Vec2* _vert_begin = 0;
-        const Vec2* _vert_end = 0;
-        const Line* _seg_begin = 0;
-        const Line* _seg_end = 0;
+        View<Triangle> triangles_view;
+        View<Vec2> verts_view;
+        View<Line> segs_view;
+
         //TODO: find a way to optimize the redundant vertices(PROBABLY not a problem but eh who knows)
     public:
         bool Intersects(const PolygonBase& other) const;
@@ -58,6 +57,12 @@ namespace Engine {
 
             bounding_box = AxisAlignedRect(verts);
 
+        }
+
+        inline void InitIterators() {
+            triangles_view.Init(triangles);
+            verts_view.Init(verts);
+            segs_view.Init(segments);
         }
         //Its probably quicker to translate everything instead of calling init again so
         void Translate(const Vec2& vec) {

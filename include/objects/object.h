@@ -11,6 +11,6 @@ namespace Engine{
     class ColliderObject : ObjectBase {
 
         
-    }
+    };
 
 }

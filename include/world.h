@@ -27,11 +27,11 @@ namespace Engine {
             double min_frac = 1.0;
             obj_id_t collided_object_id = 0;
             bool collided = false;
-            for(const Line& seg : std::span(object._seg_begin, object._seg_end)){
+            for(const Line& seg : object.segs_view.GetConst()){
                 for(auto it : objects_table) {
                     if(it.first == object_uid)
                         continue;
-                    for(const Vec2& vert : std::span(it.second->_vert_begin, it.second->_vert_end)){
+                    for(const Vec2& vert : it.second->verts_view.GetConst()){
                         if(!seg.IsInLineTrajectory(vec, vert))
                             continue;
                         double frac = seg.TraceLineSegmentToPointFrac(vec, vert);
@@ -46,6 +46,21 @@ namespace Engine {
                 return collided_object_id;
             return {};
         };
+        
+        obj_id_t AddObject(TrianglePolygon obj) {
+            obj_id_t index = current_id;
+            current_id++;
+            triangles_table[index] = obj;
+            objects_table[index] = &triangles_table[index];
+            return index;
+        }
+        obj_id_t AddObject(QuadConvexPolygon obj) {
+            obj_id_t index = current_id;
+            current_id++;
+            quads_table[index] = obj;
+            objects_table[index] = &triangles_table[index];
+            return index;
+        }
 
 
 
