@@ -139,7 +139,7 @@ namespace Engine {
             double frac = std::numeric_limits<double>::max();
             for(const Vec2& vert : verts){
                 if(!line.IsInLineTrajectory(vec, vert))
-                        continue;
+                    continue;
                 frac = std::min(line.TraceLineSegmentToPointFrac(vec, vert), frac);
             }
             return frac;
@@ -164,7 +164,7 @@ namespace Engine {
 
         double TracePolygon(const PolygonBase& other, const Vec2& vec) const {
             if(typeid(other) == typeid(TrianglePolygon))
-                return StaticTTracePolygon(static_cast<const TrianglePolygon&>(other), vec);
+                return StaticTracePolygon(static_cast<const TrianglePolygon&>(other), vec);
             if(typeid(other) == typeid(QuadConvexPolygon))
                 return StaticTracePolygon(static_cast<const QuadConvexPolygon&>(other), vec);
             throw std::exception();

@@ -28,11 +28,15 @@ namespace Engine{
         //Yes there are redundant calcs, no I dont care
         //Returns fraction traced before move vec hits point
         double TraceLineSegmentToPointFrac(const Vec2_t& move_vec, const Vec2_t& point) const {
-            T parallel_dist = GetDirection().GetNormalized() * move_vec;
-            T perp_move_distance = std::sqrt(move_vec.GetLengthSqr() - (parallel_dist * parallel_dist));
-            T p_dist = GetDistToPoint(point);
+            Vec2_t line_dir = GetDirection().GetNormalized();
+            //T parallel_dist = line_dir * move_vec;
+            T p_perp_dist = GetDistToPoint(point);
+            T dot = line_dir * move_vec;
+
+            T perp_move_distance = std::sqrt(move_vec.GetLengthSqr() - dot * dot);
+            
             //yea idgaf at this point
-            return ((double)p_dist / (double)perp_move_distance);
+            return ((double)p_perp_dist / (double)perp_move_distance);
         } 
         //Credits: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
         std::optional<Vec2_t> GetIntersect(const _Line& other) const {

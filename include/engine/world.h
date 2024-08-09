@@ -63,12 +63,13 @@ namespace Engine {
                 return {};
 
             for(obj_id_t obj_id : collisions) {
-                double res = new_polygon.TracePolygon(*objects_table[obj_id], vec);
+                double res = polygon.TracePolygon(*objects_table[obj_id], vec);
                 if(res < frac) {
                     frac = res;
                     collided_object_id = obj_id;
                 }
             }
+            polygon.Translate(vec * frac);
             return collided_object_id;
         }
         //NOTE: LOTS OF FUCKY SHIT GOING ON HERE, WATCH THE FUCK OUT
