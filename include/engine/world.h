@@ -59,8 +59,10 @@ namespace Engine {
             _PolygonTy new_polygon = polygon;
             new_polygon.Translate(vec);
             collisions = GetCollisions(new_polygon, true);
-            if(collisions.size() == 0)
+            if(collisions.size() == 0){
+                polygon.Translate(vec);
                 return {};
+            }
 
             for(obj_id_t obj_id : collisions) {
                 double res = polygon.TracePolygon(*objects_table[obj_id], vec);
@@ -97,9 +99,9 @@ namespace Engine {
         };
         //Please dont call this...
         void AddObject(PolygonBase* obj, obj_id_t idx) {
-            if(typeid(obj) == typeid(TrianglePolygon*))
+            if(typeid(*obj) == typeid(TrianglePolygon))
                 triangles_table[idx] = static_cast<TrianglePolygon*>(obj);
-            else if(typeid(obj) == typeid(QuadConvexPolygon*))
+            else if(typeid(*obj) == typeid(QuadConvexPolygon))
                 quads_table[idx] = static_cast<QuadConvexPolygon*>(obj);
             objects_table[idx] = obj;
         }
