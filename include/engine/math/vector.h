@@ -117,6 +117,10 @@ namespace Engine {
         T Cross(const _Vec2& other) const {
             return x * other.y - y * other.x;
         }
+
+        static _Vec2 FromAngle(double rad) {
+            return _Vec2(std::cos(rad), std::sin(rad));
+        }
         
 
         
