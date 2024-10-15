@@ -18,7 +18,7 @@ namespace Engine
     private:
         static T _orient(const Vec2_t& a, const Vec2_t& b, const Vec2_t& c)
         {
-            return (b - a).Cross(c - a);
+            return b - a.Cross(c - a);
         }
 
     public:
