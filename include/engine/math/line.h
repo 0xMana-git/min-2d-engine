@@ -39,7 +39,7 @@ namespace Engine{
             return ((double)p_perp_dist / (double)perp_move_distance);
         } 
         //Credits: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-        std::optional<Vec2_t> GetIntersect(const _Line& other) const {
+        inline std::optional<Vec2_t> GetIntersect(const _Line& other) const {
             double s1_x, s1_y, s2_x, s2_y;
             s1_x = end.x - start.x;     
             s1_y = end.y - start.y;
@@ -51,7 +51,6 @@ namespace Engine{
 
             if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
             {
-
                 return Vec2_t(start.x + (t * s1_x), start.y + (t * s1_y));
             }
 
