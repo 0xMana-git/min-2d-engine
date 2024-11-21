@@ -1,13 +1,14 @@
 #pragma once
 
-#include "engine/math/vector.h"
-#include "engine/misc/typedefs.h"
+#include "math/vector.hpp"
+#include "misc/typedefs.hpp"
 
 #include <cmath>
 #include <optional>
 //Yes its technically a """segment"""
 //No i dont care
 namespace Engine{
+    constexpr double EPS = 1E-16;
     template<typename T>
     struct _Line {
         using Vec2_t = _Vec2<T>;
@@ -25,6 +26,7 @@ namespace Engine{
             return std::sqrt(point_vec.GetLengthSqr() - dot * dot);
 
         }
+        
         //Yes there are redundant calcs, no I dont care
         //Returns fraction traced before move vec hits point
         double TraceLineSegmentToPointFrac(const Vec2_t& move_vec, const Vec2_t& point) const {
@@ -38,23 +40,77 @@ namespace Engine{
             //yea idgaf at this point
             return ((double)p_perp_dist / (double)perp_move_distance);
         } 
+
+        //credits: https://cp-algorithms.com/geometry/segments-intersection.html
+        inline static bool _intersect_1d(T a, T b, T c, T d) 
+        {
+            if (a > b)
+                std::swap(a, b);
+            if (c > d)
+                std::swap(c, d);
+            return std::max(a, c) <= std::min(b, d) + EPS;
+        }
+
         //Credits: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-        inline std::optional<Vec2_t> GetIntersect(const _Line& other) const {
-            double s1_x, s1_y, s2_x, s2_y;
-            s1_x = end.x - start.x;     
-            s1_y = end.y - start.y;
-            s2_x = other.end.x - other.start.x;     
-            s2_y = other.end.y - other.start.y;
+        //IMPORTANT: ORDER MATTERS!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //when 2 lines are collinear, the intersect is defined as the point of the other line that is closer to this start
+        inline std::optional<Vec2_t> GetIntersect(const _Line& other) const{
 
-            double s = (-s1_y * (start.x - other.start.x) + s1_x * (start.y - other.start.y)) / (-s2_x * s1_y + s1_x * s2_y);
-            double t = ( s2_x * (start.y - other.start.y) - s2_y * (start.x - other.start.x)) / (-s2_x * s1_y + s1_x * s2_y);
+            //bounding box check, i REALLY hope this solve collinear edgecase
+            if(!_intersect_1d(start.x, end.x, other.start.x, other.end.x)) 
+                return {};
+            if(!_intersect_1d(start.y, end.y, other.start.y, other.end.y))
+                return {};
 
-            if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-            {
-                return Vec2_t(start.x + (t * s1_x), start.y + (t * s1_y));
+            Vec2_t this_delta = end - start;
+            Vec2_t other_delta = other.end - other.start;
+            // If the direction cross product = 0, they are facing the same direction
+            double dir_cross = this_delta.Cross(other_delta);
+            double cross_inv = 1 / dir_cross;
+
+            
+            Vec2_t this_other_delta = other.start - start;
+            //if delta vec and direction(one of the vecs) cross = 0, one of the direction is in the same direction as the delta vec
+            double dir_delta_cross = this_other_delta.Cross(this_delta);
+
+            bool dir_parallel = std::abs(dir_cross) < 0;
+            bool dir_delta_parallel = std::abs(dir_delta_cross) < 0;
+            
+            //parallel but not collinear
+            if(dir_parallel && !(dir_delta_parallel))
+                return {};
+            
+            //if collinear
+            //its DEFINITELY joined due to bbox check
+            if(dir_parallel){
+                //there is a better way but im sick of this fuckin shit
+                Vec2_t start_to_other_end = other.end - start;
+                Vec2_t& start_to_other_start = this_other_delta;
+                double start_dp = this_delta * start_to_other_start;
+                
+                if(start_dp < 0)
+                    return other.end;
+                //in this case, both have positive dp because any other case is impossible
+
+                //if other start is closer
+                if(start_to_other_end.GetLengthSqr() < start_to_other_start.GetLengthSqr())
+                    return other.end;
+                return other.start;
+
             }
+                
+            
+            
+            //there should be a check for disjoining vecs, but i THINK bbox check handles it
+            double u = dir_delta_cross * cross_inv;
 
-            return {}; // No collision
+            //the 1 checks are redundant due to bbox but im keeping it
+            if(u < 0 || u > 1) 
+                return {};
+            double t = this_other_delta.Cross(other_delta) * cross_inv;
+            if(t < 0 || t > 1) 
+                return {};
+            return Vec2_t(start + (this_delta * t)); // No collision
         }
         bool IsInLineTrajectory(const Vec2_t& move_vec, const Vec2_t& point) const {
             Vec2_t sd = point - start, ed = point - end;
@@ -68,6 +124,9 @@ namespace Engine{
         void Translate(const Vec2_t& vec) {
             start += vec;
             end += vec;
+        }
+        std::string to_string() const {
+            return "start: " + start.to_string() + "    end: " + end.to_string();
         }
 
 
