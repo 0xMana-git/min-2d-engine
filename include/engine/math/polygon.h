@@ -29,6 +29,7 @@ namespace Engine {
         //TODO: find a way to optimize the redundant vertices(PROBABLY not a problem but eh who knows)
     public:
         bool Intersects(const PolygonBase& other) const;
+        bool IsInPolygon(const Vec2& point) const;
         virtual double TraceLineToPolygon(const Line& line, const Vec2& vec) const;
         virtual double TracePolygon(const PolygonBase& other, const Vec2& vec) const;
         //void Rotate(double rad);

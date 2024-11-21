@@ -39,6 +39,13 @@ namespace Engine {
                 return false;
             return true;
         };
+        bool IsInBox(const Vec2_t& point) const {
+            if(min.x > point.x || max.x < point.x)
+                return false;
+            if(min.y > point.y || max.y < point.y)
+                return false;
+            return true;
+        }
         void Translate(const Vec2_t& vec) {
             min += vec;
             max += vec;

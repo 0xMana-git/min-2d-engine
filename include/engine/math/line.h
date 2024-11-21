@@ -1,10 +1,11 @@
 #pragma once
 
-#include "engine/math/vector.hpp"
-#include "engine/misc/typedefs.hpp"
+#include "engine/math/vector.h"
+#include "engine/misc/typedefs.h"
 
 #include <cmath>
 #include <optional>
+#include <string>
 //Yes its technically a """segment"""
 //No i dont care
 namespace Engine{
