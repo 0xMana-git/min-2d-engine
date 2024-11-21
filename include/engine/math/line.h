@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math/vector.hpp"
-#include "misc/typedefs.hpp"
+#include "engine/math/vector.hpp"
+#include "engine/misc/typedefs.hpp"
 
 #include <cmath>
 #include <optional>
